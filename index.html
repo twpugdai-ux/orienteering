@@ -79,6 +79,15 @@
 
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
         
+        <!-- Warning Banner for Firebase setup -->
+        <div id="firebase-setup-notice" class="hidden mb-6 bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl text-amber-900 text-xs md:text-sm shadow-sm space-y-1">
+            <div class="flex items-center gap-2 font-black text-amber-700">
+                <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                <span>Firebase 後台尚未設定完成通知</span>
+            </div>
+            <p id="firebase-notice-text">請至 Firebase Console 啟用 Authentication 匿名登入。</p>
+        </div>
+
         <!-- TAB 1: Task Grid View (31-47) -->
         <section id="tab-map" class="space-y-6">
             <!-- Hero Banner -->
@@ -572,7 +581,28 @@
 
             } catch (err) {
                 console.error("Auth Exception:", err);
-                showToast("連線或驗證失敗，請重新整理網頁", "error");
+                // Fallback to guest ID for local preview rendering
+                currentUserId = 'guest_' + Math.random().toString(36).substring(2, 9);
+
+                listenToConfig();
+                listenToTasks();
+                listenToSubmissions();
+
+                if (err.code === 'auth/configuration-not-found' || (err.message && err.message.includes('configuration-not-found'))) {
+                    showNoticeBanner("⚠️ <b>Firebase 驗證未開啟：</b>請登入 <a href='https://console.firebase.google.com/' target='_blank' class='underline font-bold text-amber-900'>Firebase Console</a> ➔ 點擊左側 <b>Authentication</b> ➔ <b>Sign-in method</b> ➔ 啟用<b>「匿名 (Anonymous)」</b>登入！");
+                    showToast("請至 Firebase Console 啟用匿名登入", "error");
+                } else {
+                    showToast("連線或驗證失敗，請檢查 Firebase 設定", "error");
+                }
+            }
+        }
+
+        function showNoticeBanner(msgHtml) {
+            const noticeEl = document.getElementById('firebase-setup-notice');
+            const textEl = document.getElementById('firebase-notice-text');
+            if (noticeEl && textEl) {
+                textEl.innerHTML = msgHtml;
+                noticeEl.classList.remove('hidden');
             }
         }
 
@@ -798,17 +828,27 @@
                     <div class="space-y-3">
                         <label class="block text-xs font-bold text-slate-700">拍照或上傳任務照片 <span class="text-rose-500">*</span></label>
                         <div class="border-2 border-dashed border-rose-200 hover:border-rose-400 bg-rose-50/50 rounded-2xl p-6 text-center cursor-pointer transition relative" onclick="document.getElementById('photo-upload-input').click()">
-                            <input type="file" id="photo-upload-input" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoSelect(event)">
+                            <input type="file" id="photo-upload-input" accept="image/*" class="hidden" onchange="handlePhotoSelect(event)">
                             <div id="photo-preview-container" class="hidden space-y-2">
                                 <img id="photo-preview-img" src="" alt="Preview" class="max-h-48 mx-auto rounded-xl shadow-md border border-white">
-                                <p class="text-xs text-rose-600 font-bold"><i class="fa-solid fa-arrows-rotate me-1"></i>點擊可更換照片</p>
+                                <p class="text-xs text-rose-600 font-bold"><i class="fa-solid fa-arrows-rotate me-1"></i>點擊可重新選擇相簿或拍照</p>
                             </div>
-                            <div id="photo-upload-placeholder" class="space-y-2">
+                            <div id="photo-upload-placeholder" class="space-y-3">
                                 <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center mx-auto text-xl shadow-inner">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
                                 </div>
-                                <p class="text-sm font-bold text-slate-700">點此開啟相機或選擇照片上傳</p>
-                                <p class="text-xs text-slate-400">支援 JPG、PNG，圖片將自動優化壓縮</p>
+                                <div>
+                                    <p class="text-sm font-bold text-slate-700">點此上傳照片（支援相簿與拍照）</p>
+                                    <p class="text-xs text-slate-400 mt-1">點擊後可從手機/電腦相簿選擇，或直接拍照</p>
+                                </div>
+                                <div class="flex justify-center gap-2 pt-1">
+                                    <span class="px-3 py-1 bg-white border border-rose-200 rounded-lg text-xs font-bold text-rose-700 shadow-sm flex items-center gap-1">
+                                        <i class="fa-solid fa-images"></i> 從相簿選擇
+                                    </span>
+                                    <span class="px-3 py-1 bg-white border border-rose-200 rounded-lg text-xs font-bold text-rose-700 shadow-sm flex items-center gap-1">
+                                        <i class="fa-solid fa-camera"></i> 現場拍照
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div>
