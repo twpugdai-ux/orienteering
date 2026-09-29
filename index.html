@@ -61,6 +61,10 @@
 
             <!-- Navigation Tabs -->
             <nav class="flex items-center gap-1 bg-rose-50 p-1 rounded-xl border border-rose-100">
+                <div id="header-team-badge" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-rose-700 border border-rose-200 shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-users text-rose-500"></i>
+                    <span id="header-team-name-text">設定隊名</span>
+                </div>
                 <button id="nav-map" onclick="switchTab('map')" class="px-3 md:px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 bg-rose-500 text-white shadow-sm">
                     <i class="fa-solid fa-map-location-dot"></i>
                     <span>定向任務 (31-47)</span>
@@ -77,171 +81,168 @@
         </div>
     </header>
 
-    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
-        
-        <!-- Warning Banner for Firebase setup -->
-        <div id="firebase-setup-notice" class="hidden mb-6 bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl text-amber-900 text-xs md:text-sm shadow-sm space-y-1">
-            <div class="flex items-center gap-2 font-black text-amber-700">
-                <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-                <span>Firebase 後台尚未設定完成通知</span>
-            </div>
-            <p id="firebase-notice-text">請至 Firebase Console 啟用 Authentication 匿名登入。</p>
+    <main class="max-w-6xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+
+        <!-- Banner Alert for Setup Notice if Firebase Auth is not configured -->
+        <div id="firebase-setup-notice" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-800 flex items-start gap-3 shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-lg mt-0.5"></i>
+            <div id="firebase-notice-text" class="flex-1 leading-relaxed"></div>
         </div>
 
-        <!-- TAB 1: Task Grid View (31-47) -->
+        <!-- TAB 1: Orienteering Checkpoint Map Grid -->
         <section id="tab-map" class="space-y-6">
-            <!-- Hero Banner -->
-            <div class="bg-gradient-to-r from-rose-500 via-pink-500 to-teal-500 rounded-3xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
-                <div class="absolute -right-10 -bottom-10 opacity-15 text-9xl font-black select-none pointer-events-none">
-                    +1
-                </div>
-                <div class="relative z-10 max-w-2xl">
-                    <span class="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase">
-                        <i class="fa-solid fa-heart me-1"></i> 女孩力量 • 探索諸羅
+            <div class="bg-gradient-to-r from-rose-500 via-pink-500 to-rose-400 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="max-w-2xl relative z-10 space-y-3">
+                    <span class="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase">
+                        <i class="fa-solid fa-flag-checkered me-1"></i> 檢查點總覽 #31 ~ #47
                     </span>
-                    <h2 class="text-2xl md:text-4xl font-extrabold mt-2 mb-3">歡迎來到「諸羅定向趣」任務關卡！</h2>
-                    <p class="text-rose-50 text-sm md:text-base leading-relaxed">
-                        點選下方 <span class="bg-white/20 px-2 py-0.5 rounded font-bold">31號 至 47號</span> 任務按鈕，輸入您的姓名與現場獲取的解鎖密碼，即可開啟挑戰！閱讀故事測驗或拍照記錄屬於你的女孩日 moment！
+                    <h2 class="text-2xl md:text-3xl font-black">歡迎參加嘉義定向越野探索！</h2>
+                    <p class="text-xs md:text-sm text-rose-100 font-medium leading-relaxed">
+                        點擊下方對應的檢查點按鈕（31-47號），輸入現場工作人員提供的關卡密碼即可開啟解鎖任務。完成挑戰展現諸羅女力+1吧！
                     </p>
                 </div>
             </div>
 
-            <!-- Header Info & Legend -->
-            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-rose-100">
-                <div class="flex items-center gap-2 text-sm font-bold text-slate-700">
-                    <i class="fa-solid fa-circle-info text-rose-500"></i>
-                    <span>請選擇任務卡片解鎖 (共 17 個點位)</span>
+            <!-- Task Grid (31 to 47) -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-rose-500"></i>
+                        定向探索點位任務清單
+                    </h3>
+                    <span class="text-xs text-slate-500 font-medium">共 17 個點位 (31~47)</span>
                 </div>
-                <div class="flex items-center gap-4 text-xs font-medium text-slate-500">
-                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>閱讀測驗/問答</span>
-                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-teal-500 inline-block"></span>照片上傳任務</span>
-                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>我已完成</span>
+                <div id="task-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Dynamic rendering by JS -->
                 </div>
-            </div>
-
-            <!-- Task Grid 31-47 -->
-            <div id="task-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <!-- Dynamic Task Buttons Rendered Here -->
             </div>
         </section>
 
-        <!-- TAB 2: Submissions Gallery (成果展示牆) -->
-        <section id="tab-gallery" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-rose-100 flex flex-wrap items-center justify-between gap-4">
+        <!-- TAB 2: Showcase Gallery (成果展示牆) -->
+        <section id="tab-gallery" class="space-y-6 hidden">
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-rose-100 shadow-sm">
                 <div>
-                    <h2 class="text-2xl font-bold text-rose-700 flex items-center gap-2">
-                        <i class="fa-solid fa-photo-film"></i> 全體活動成果展示牆
+                    <h2 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-photo-film text-rose-500"></i>
+                        諸羅定向趣 成果展示牆
                     </h2>
-                    <p class="text-sm text-slate-500 mt-1">成果依檢查點編號 (31 至 47 號) 依序排列展示！</p>
+                    <p class="text-xs text-slate-500 mt-1">展示所有挑戰者順利通關上傳的心得與現場精采照片！</p>
                 </div>
-                
-                <!-- Filter & Status Controls -->
                 <div class="flex items-center gap-3">
-                    <div id="gallery-status-badge" class="text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 bg-amber-100 text-amber-800 border border-amber-200">
-                        <i class="fa-solid fa-lock"></i> 未開放狀態
+                    <div id="gallery-status-badge">
+                        <!-- Rendered by JS -->
                     </div>
-                    <div class="flex items-center gap-2">
-                        <label class="text-xs font-bold text-slate-500">編號篩選：</label>
-                        <select id="gallery-filter" onchange="renderGallery()" class="bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-400 outline-none">
-                            <option value="ALL">全部檢查點 (31 - 47)</option>
-                        </select>
-                    </div>
+                    <select id="gallery-filter" onchange="renderGallery()" class="px-3 py-2 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl outline-none focus:ring-2 focus:ring-rose-300">
+                        <option value="ALL">全部檢查點 (31 - 47)</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- Locked Gallery Notice for General Users -->
-            <div id="gallery-locked-view" class="hidden py-16 text-center text-slate-500 bg-white rounded-3xl border border-dashed border-rose-200 shadow-sm p-8 space-y-3">
-                <div class="w-20 h-20 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto shadow-inner">
+            <!-- Locked Notice when Gallery is closed by admin -->
+            <div id="gallery-locked-view" class="hidden text-center py-16 bg-white rounded-3xl border border-dashed border-rose-200 p-8 space-y-3">
+                <div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
                     <i class="fa-solid fa-lock"></i>
                 </div>
-                <h3 class="text-xl font-black text-slate-800">成果展示牆尚未開放</h3>
-                <p class="text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
-                    主辦單位目前尚未開放成果展示牆。請繼續完成您的定向探索任務，待活動結束或管理者開放後，即可在此欣賞大家的精采照片與成果！
+                <h3 class="text-lg font-black text-slate-800">成果展示牆審核閉鎖中</h3>
+                <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                    目前管理員尚未開放大眾瀏覽成果展示牆。活動進行中請先前往「定向任務 (31-47)」完成挑戰，成果會在管理員解鎖後統一呈現！
                 </p>
             </div>
 
-            <!-- Gallery Cards Grid -->
+            <!-- Submissions Container -->
             <div id="gallery-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Submissions dynamically rendered here -->
+                <!-- Rendered dynamically by JS -->
             </div>
         </section>
 
-        <!-- TAB 3: Admin Backstage (管理者後台) -->
-        <section id="tab-admin" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-rose-200 flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-slate-800 text-amber-400 flex items-center justify-center text-2xl shadow-md">
-                        <i class="fa-solid fa-sliders"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-black text-slate-800">管理者控制台</h2>
-                        <p class="text-xs text-slate-500">控制展示牆開放狀態、修改管理員密碼、管理 31-47 號關卡題目與密碼</p>
-                    </div>
+        <!-- TAB 3: Admin Backoffice (管理者後台) -->
+        <section id="tab-admin" class="space-y-6 hidden">
+            <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <span class="px-2.5 py-0.5 bg-rose-500 text-white rounded-full text-xs font-black">Admin Panel</span>
+                    <h2 class="text-xl font-black mt-1">管理者後台控制面板</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">管理 31-47 號檢查點密碼、題目內容與成果牆開放狀態</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="promptResetDefaultTasks()" class="px-4 py-2 bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-200 text-xs font-bold rounded-xl transition">
-                        <i class="fa-solid fa-rotate-left me-1"></i> 恢復預設題庫與密碼
-                    </button>
-                    <button onclick="adminLogout()" class="px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold rounded-xl transition">
+                    <button onclick="adminLogout()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition">
                         <i class="fa-solid fa-right-from-bracket me-1"></i> 登出管理者
                     </button>
                 </div>
             </div>
 
-            <!-- Global Admin Settings Panel -->
+            <!-- Admin Action Settings -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Card 1: Gallery Visibility Toggle -->
+                <!-- Gallery Visibility Toggle Card -->
                 <div class="bg-white p-5 rounded-3xl border border-rose-100 shadow-sm space-y-3">
-                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
-                        <i class="fa-solid fa-eye text-rose-500 text-lg"></i>
-                        <h3 class="font-black text-slate-800 text-base">成果展示牆開放狀態</h3>
-                    </div>
-                    <p class="text-xs text-slate-500">
-                        設定大眾是否可以在「成果展示牆」檢視全體參加者上傳的照片與答案。
-                    </p>
-                    <div class="pt-2 flex items-center justify-between bg-rose-50/50 p-3.5 rounded-2xl border border-rose-100">
-                        <div>
-                            <span class="text-xs font-bold text-slate-700 block">目前狀態：</span>
-                            <span id="admin-gallery-visibility-text" class="text-xs font-extrabold text-amber-600">🔒 關閉中 (僅管理員可見)</span>
-                        </div>
-                        <button id="btn-toggle-gallery-vis" onclick="toggleGalleryVisibility()" class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-lock-open"></i> 立即開放大眾瀏覽
+                    <h3 class="font-black text-slate-800 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-eye text-rose-500"></i> 成果展示牆開放狀態控管
+                    </h3>
+                    <p class="text-xs text-slate-500">設定全體挑戰者是否可公開點擊瀏覽「成果展示牆」。</p>
+                    <div class="flex items-center justify-between pt-2">
+                        <span id="admin-gallery-visibility-text" class="text-xs font-bold">載入中...</span>
+                        <button id="btn-toggle-gallery-vis" onclick="toggleGalleryVisibility()" class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition shadow-md">
+                            切換狀態
                         </button>
                     </div>
                 </div>
 
-                <!-- Card 2: Admin Password Change -->
+                <!-- Update Admin Password Card -->
                 <div class="bg-white p-5 rounded-3xl border border-rose-100 shadow-sm space-y-3">
-                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
-                        <i class="fa-solid fa-key text-amber-500 text-lg"></i>
-                        <h3 class="font-black text-slate-800 text-base">修改管理者登入密碼</h3>
-                    </div>
-                    <p class="text-xs text-slate-500">
-                        修改後台登入密碼（預設密碼：<code class="bg-slate-100 px-1 py-0.5 rounded text-rose-600 font-bold">admin888</code>）。
-                    </p>
-                    <form onsubmit="handleUpdateAdminPassword(event)" class="flex gap-2 pt-1">
-                        <input type="password" id="input-new-admin-password" required placeholder="請輸入新管理密碼" class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs font-mono font-bold focus:border-rose-500 outline-none">
-                        <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-black text-white font-bold text-xs rounded-xl shadow-md transition">
-                            儲存新密碼
+                    <h3 class="font-black text-slate-800 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-key text-rose-500"></i> 修改管理者通行密碼
+                    </h3>
+                    <form onsubmit="handleUpdateAdminPassword(event)" class="flex gap-2">
+                        <input type="password" id="input-new-admin-password" placeholder="輸入新密碼" required class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium focus:border-rose-500 outline-none">
+                        <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl transition">
+                            更換密碼
                         </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Admin Tasks Management List (31-47) -->
-            <div class="pt-2">
-                <h3 class="text-lg font-black text-slate-800 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-rose-500"></i> 各檢查點關卡密碼與題目設定 (31–47 號)
+            <div class="flex items-center justify-between pt-4">
+                <h3 class="text-base font-black text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-rose-500"></i>
+                    關卡題目與密碼編輯 (31~47號)
                 </h3>
-                <div id="admin-task-list" class="space-y-4">
-                    <!-- Dynamic Admin Editing Cards for Buttons 31-47 -->
-                </div>
+                <button onclick="promptResetDefaultTasks()" class="text-xs text-rose-600 hover:underline font-bold">
+                    <i class="fa-solid fa-rotate-left me-1"></i>重置為預設題庫
+                </button>
+            </div>
+
+            <!-- Dynamic Admin Tasks List -->
+            <div id="admin-task-list" class="space-y-4">
+                <!-- Rendered by JS -->
             </div>
         </section>
 
     </main>
 
-    <!-- MODAL 1: User Verification Modal (姓名 + 密碼) -->
+    <!-- MODAL 0: Team Name Setup Modal -->
+    <div id="modal-team-setup" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-rose-100 animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center mb-3">
+                <span class="px-3 py-1 bg-rose-100 text-rose-700 text-xs font-black rounded-full"><i class="fa-solid fa-user-plus me-1"></i> 隊伍設定</span>
+                <button onclick="closeModal('modal-team-setup')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <h3 class="text-xl font-black text-slate-800 mb-1">請輸入您的姓名或隊名</h3>
+            <p class="text-xs text-slate-500 mb-5">輸入一次隊名後，接下來解鎖所有點位任務均無需再重複輸入！</p>
+
+            <form onsubmit="handleSaveTeamName(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">您的姓名 / 隊名 <span class="text-rose-500">*</span></label>
+                    <input type="text" id="input-initial-team-name" required placeholder="例如: 嘉義小女孩 / 諸羅探索隊" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none text-sm font-medium">
+                </div>
+                <button type="submit" class="w-full py-3 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-xl shadow-lg shadow-rose-200 transition">
+                    儲存隊名，開始探索 <i class="fa-solid fa-arrow-right ms-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 1: User Verification Modal (僅需輸入關卡密碼) -->
     <div id="modal-auth" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-rose-100 animate-in fade-in zoom-in duration-200">
             <div class="flex justify-between items-center mb-4">
@@ -250,17 +251,19 @@
             </div>
             
             <h3 class="text-xl font-black text-slate-800 mb-1">任務解鎖驗證</h3>
-            <p class="text-xs text-slate-500 mb-5">請輸入您的姓名與現場工作人員提供的該關卡密碼以開始任務。</p>
+            
+            <!-- Active Team Badge -->
+            <div class="bg-rose-50 border border-rose-100 p-3 rounded-2xl flex items-center justify-between text-xs text-rose-800 mb-4">
+                <span><i class="fa-solid fa-users me-1.5 text-rose-500"></i>隊名：<strong id="auth-team-display" class="text-sm text-slate-800">--</strong></span>
+            </div>
+
+            <p class="text-xs text-slate-500 mb-4">請輸入現場工作人員提供的該關卡按鈕解鎖密碼。</p>
 
             <form onsubmit="handleUserTaskLogin(event)" class="space-y-4">
                 <input type="hidden" id="auth-task-id" value="31">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">您的姓名 / 隊名 <span class="text-rose-500">*</span></label>
-                    <input type="text" id="input-user-name" required placeholder="例如: 嘉義小女孩 / 諸羅探索隊" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none text-sm font-medium">
-                </div>
-                <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">該關卡按鈕解鎖密碼 <span class="text-rose-500">*</span></label>
-                    <input type="password" id="input-task-password" required placeholder="請輸入本關卡的密碼" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none text-sm font-medium">
+                    <input type="password" id="input-task-password" required placeholder="請輸入本關卡的密碼" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none text-sm font-medium" autofocus>
                 </div>
                 <div id="auth-error-msg" class="text-xs font-bold text-rose-600 hidden bg-rose-50 p-2.5 rounded-xl border border-rose-200">
                     <i class="fa-solid fa-circle-exclamation me-1"></i> 密碼不正確，請再試一次！
@@ -383,7 +386,7 @@
     <footer class="bg-white border-t border-rose-100 py-6 mt-12 text-center text-xs text-slate-400">
         <div class="max-w-6xl mx-auto px-4 space-y-2">
             <p class="font-medium text-slate-600">諸羅定向趣，女孩日+1 ✕ 嘉義市女孩日主題體驗活動</p>
-            <p>© 2026 Chiayi Girl's Day Orientoring. All rights reserved.</p>
+            <p>© 2026 Chiayi Girl's Day Orienteering. All rights reserved.</p>
         </div>
     </footer>
 
@@ -408,7 +411,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Paths strictly following Firestore Rule 1
+        // Paths strictly following Firestore Rules
         const tasksCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'tasks');
         const submissionsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'submissions');
         const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
@@ -419,7 +422,7 @@
         let submissionsList = [];
         let completedTaskIds = new Set();
         let selectedTaskIdForLogin = null;
-        let currentEditingUser = null;
+        let currentEditingUser = localStorage.getItem('chiayi_girls_day_team') || '';
         let uploadedBase64Image = null;
         let isAdminLoggedIn = false;
         let isGalleryPublic = false;
@@ -574,14 +577,12 @@
                 }
                 console.log("Authenticated User ID:", currentUserId);
 
-                // Start Listening to Firestore
                 listenToConfig();
                 listenToTasks();
                 listenToSubmissions();
 
             } catch (err) {
                 console.error("Auth Exception:", err);
-                // Fallback to guest ID for local preview rendering
                 currentUserId = 'guest_' + Math.random().toString(36).substring(2, 9);
 
                 listenToConfig();
@@ -606,7 +607,6 @@
             }
         }
 
-        // Realtime Global System Settings Listener
         function listenToConfig() {
             onSnapshot(configDocRef, (snap) => {
                 if (snap.exists()) {
@@ -614,7 +614,6 @@
                     isGalleryPublic = data.isGalleryPublic ?? false;
                     currentAdminPassword = data.adminPassword || 'admin888';
                 } else {
-                    // Seed initial config
                     setDoc(configDocRef, {
                         isGalleryPublic: false,
                         adminPassword: 'admin888'
@@ -624,7 +623,6 @@
             }, (err) => console.error("Config Listener Error:", err));
         }
 
-        // Realtime Tasks Listener
         function listenToTasks() {
             onSnapshot(tasksCollectionRef, (snapshot) => {
                 if (snapshot.empty) {
@@ -642,7 +640,6 @@
             });
         }
 
-        // Realtime Submissions Listener
         function listenToSubmissions() {
             onSnapshot(submissionsCollectionRef, (snapshot) => {
                 submissionsList = [];
@@ -657,12 +654,11 @@
                     }
                 });
 
-                // Sort submissions: Primary by Task ID (31 to 47), Secondary by createdAt (newest first)
                 submissionsList.sort((a, b) => {
                     const taskIdA = parseInt(a.taskId, 10) || 0;
                     const taskIdB = parseInt(b.taskId, 10) || 0;
                     if (taskIdA !== taskIdB) {
-                        return taskIdA - taskIdB; // Sort 31 to 47
+                        return taskIdA - taskIdB;
                     }
                     return (b.createdAt || 0) - (a.createdAt || 0);
                 });
@@ -674,7 +670,6 @@
             });
         }
 
-        // Seed Default Tasks to Firestore
         async function seedDefaultTasks() {
             if (!auth.currentUser) return;
             for (const [id, data] of Object.entries(defaultTasksPreset)) {
@@ -721,13 +716,13 @@
             const btnVis = document.getElementById('btn-toggle-gallery-vis');
 
             if (isGalleryPublic) {
-                if (badge) badge.innerHTML = `<span class="text-emerald-700 bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-xl"><i class="fa-solid fa-lock-open me-1"></i> 大眾已可瀏覽</span>`;
+                if (badge) badge.innerHTML = `<span class="text-emerald-700 bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-lock-open me-1"></i> 大眾已可瀏覽</span>`;
                 if (visText) visText.innerHTML = `<span class="text-emerald-600 font-extrabold">🔓 已開放 (大眾可直接瀏覽)</span>`;
                 if (btnVis) btnVis.innerHTML = `<i class="fa-solid fa-lock"></i> 切換為暫停開放`;
             } else {
-                if (badge) badge.innerHTML = `<span class="text-amber-800 bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-xl"><i class="fa-solid fa-lock me-1"></i> 展示牆審核閉鎖中</span>`;
+                if (badge) badge.innerHTML = `<span class="text-amber-800 bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-lock me-1"></i> 展示牆審核閉鎖中</span>`;
                 if (visText) visText.innerHTML = `<span class="text-amber-600 font-extrabold">🔒 閉鎖中 (僅管理員可見)</span>`;
-                if (btnVis) btnVis.innerHTML = `<i class="fa-solid fa-lock-open"></i> 立即開放大眾瀏覽`;
+                if (btnVis) btnVis.innerHTML = `<i class="fa-solid fa-lock-open"></i> 獨立開放大眾瀏覽`;
             }
 
             renderGallery();
@@ -743,52 +738,99 @@
                 const task = tasksMap[idStr] || defaultTasksPreset[idStr] || { title: `${num}號任務`, type: 'quiz' };
                 const isCompleted = completedTaskIds.has(idStr);
 
-                const card = document.createElement('div');
-                card.onclick = () => openTaskLoginModal(idStr);
-                
                 let typeBadge = '';
-                let bgGradient = 'from-rose-500 to-pink-500';
-                
                 if (task.type === 'photo') {
-                    typeBadge = `<span class="bg-teal-100 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-camera me-1"></i>照片</span>`;
-                    bgGradient = 'from-teal-500 to-emerald-500';
+                    typeBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 font-bold"><i class="fa-solid fa-camera me-1"></i>照片上傳</span>';
                 } else if (task.type === 'text') {
-                    typeBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-pen me-1"></i>問答</span>`;
-                    bgGradient = 'from-amber-500 to-rose-500';
+                    typeBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold"><i class="fa-solid fa-pen-to-square me-1"></i>心得問答</span>';
                 } else {
-                    typeBadge = `<span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-list-check me-1"></i>測驗</span>`;
+                    typeBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-bold"><i class="fa-solid fa-list-check me-1"></i>閱讀測驗</span>';
                 }
 
-                card.className = `relative cursor-pointer group bg-white rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 border ${isCompleted ? 'border-emerald-400 bg-emerald-50/30' : 'border-rose-100 hover:-translate-y-1'}`;
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between shadow-sm hover:shadow-md ${
+                    isCompleted 
+                        ? 'bg-emerald-50/80 border-emerald-200 hover:border-emerald-300' 
+                        : 'bg-white border-rose-100 hover:border-rose-300 hover:-translate-y-0.5'
+                }`;
+                card.onclick = () => openTaskLoginModal(idStr);
 
                 card.innerHTML = `
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="w-8 h-8 rounded-xl bg-gradient-to-tr ${bgGradient} text-white font-black flex items-center justify-center text-sm shadow-sm group-hover:scale-110 transition-transform">
-                            ${num}
-                        </span>
-                        ${isCompleted ? '<span class="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm"><i class="fa-solid fa-check me-1"></i>已完成</span>' : typeBadge}
-                    </div>
-                    <h3 class="font-bold text-slate-800 text-xs md:text-sm line-clamp-2 mt-1 leading-snug group-hover:text-rose-600">
-                        ${task.title ? task.title.replace(/^\d+號：/, '') : `任務 ${num}`}
-                    </h3>
-                    <div class="mt-3 flex items-center justify-between text-[11px] text-slate-400">
-                        <span><i class="fa-solid fa-lock me-1"></i>解鎖任務</span>
-                        <span class="text-rose-500 font-bold group-hover:translate-x-1 transition-transform">開啟 <i class="fa-solid fa-chevron-right"></i></span>
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="w-9 h-9 rounded-xl ${isCompleted ? 'bg-emerald-500 text-white' : 'bg-gradient-to-tr from-rose-500 to-pink-500 text-white'} font-black flex items-center justify-center text-sm shadow-sm">
+                                ${num}
+                            </span>
+                            ${isCompleted 
+                                ? '<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-black flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> 已完成</span>'
+                                : '<span class="px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-key"></i> 點擊挑戰</span>'
+                            }
+                        </div>
+                        <h3 class="font-black text-slate-800 text-sm line-clamp-1 mb-1">${task.title || `${num}號任務`}</h3>
+                        <div class="flex items-center gap-1.5 mt-2">
+                            ${typeBadge}
+                        </div>
                     </div>
                 `;
                 gridEl.appendChild(card);
             }
         }
 
+        function updateTeamHeaderUI() {
+            const nameText = document.getElementById('header-team-name-text');
+            const teamBadge = document.getElementById('header-team-badge');
+            if (nameText) {
+                if (currentEditingUser) {
+                    nameText.innerText = `隊伍：${currentEditingUser}`;
+                    if (teamBadge) {
+                        teamBadge.onclick = null;
+                        teamBadge.classList.remove('cursor-pointer', 'hover:bg-rose-100');
+                    }
+                } else {
+                    nameText.innerText = '設定隊名';
+                    if (teamBadge) {
+                        teamBadge.onclick = openTeamSetupModal;
+                        teamBadge.classList.add('cursor-pointer', 'hover:bg-rose-100');
+                    }
+                }
+            }
+        }
+
+        window.openTeamSetupModal = function() {
+            const input = document.getElementById('input-initial-team-name');
+            if (input) input.value = currentEditingUser || '';
+            openModal('modal-team-setup');
+        };
+
+        window.handleSaveTeamName = function(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('input-initial-team-name').value.trim();
+            if (!nameInput) return;
+
+            currentEditingUser = nameInput;
+            localStorage.setItem('chiayi_girls_day_team', currentEditingUser);
+            updateTeamHeaderUI();
+            closeModal('modal-team-setup');
+            showToast(`隊名已設定為：「${currentEditingUser}」`, "success");
+
+            if (selectedTaskIdForLogin) {
+                openTaskLoginModal(selectedTaskIdForLogin);
+            }
+        };
+
         window.openTaskLoginModal = function(taskId) {
             selectedTaskIdForLogin = taskId;
+
+            if (!currentEditingUser) {
+                openTeamSetupModal();
+                return;
+            }
+
             document.getElementById('auth-task-id').value = taskId;
             document.getElementById('auth-modal-badge').innerText = `檢查點按鈕 #${taskId}`;
+            document.getElementById('auth-team-display').innerText = currentEditingUser;
             document.getElementById('auth-error-msg').classList.add('hidden');
-            
-            if (currentEditingUser) {
-                document.getElementById('input-user-name').value = currentEditingUser;
-            }
+            document.getElementById('input-task-password').value = '';
             
             openModal('modal-auth');
         };
@@ -796,17 +838,15 @@
         window.handleUserTaskLogin = function(e) {
             e.preventDefault();
             const taskId = selectedTaskIdForLogin;
-            const userName = document.getElementById('input-user-name').value.trim();
             const passwordInput = document.getElementById('input-task-password').value.trim();
 
             const task = tasksMap[taskId] || defaultTasksPreset[taskId];
             const correctPassword = task ? task.password : `${taskId}0`;
 
             if (passwordInput === correctPassword) {
-                currentEditingUser = userName;
                 closeModal('modal-auth');
                 document.getElementById('input-task-password').value = '';
-                openTaskExecModal(taskId, userName);
+                openTaskExecModal(taskId, currentEditingUser);
             } else {
                 document.getElementById('auth-error-msg').classList.remove('hidden');
             }
@@ -989,7 +1029,6 @@
             const filterVal = document.getElementById('gallery-filter')?.value || 'ALL';
             if (!container || !lockedView) return;
 
-            // Visibility Check: If gallery is closed and user is NOT admin, show locked view
             if (!isGalleryPublic && !isAdminLoggedIn) {
                 lockedView.classList.remove('hidden');
                 container.classList.add('hidden');
@@ -1047,7 +1086,6 @@
                     `;
                 }
 
-                // Delete button for Admin
                 const deleteButtonHtml = isAdminLoggedIn ? `
                     <button onclick="promptDeleteSubmission('${sub.id}')" class="px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 text-[11px] font-bold rounded-lg transition flex items-center gap-1">
                         <i class="fa-solid fa-trash-can"></i> 刪除
@@ -1099,7 +1137,7 @@
             isAdminLoggedIn = false;
             document.getElementById('nav-admin-text').innerText = "管理者後台";
             switchTab('map');
-            showToast("已成功登入管理員身分", "info");
+            showToast("已成功登出管理員身分", "info");
         };
 
         window.toggleGalleryVisibility = async function() {
@@ -1316,6 +1354,13 @@
         // Initialize App on window load
         window.onload = function() {
             initAuthAndData();
+            updateTeamHeaderUI();
+
+            if (!currentEditingUser) {
+                setTimeout(() => {
+                    openTeamSetupModal();
+                }, 500);
+            }
         };
     </script>
 </body>
