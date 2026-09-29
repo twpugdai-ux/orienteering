@@ -201,7 +201,17 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between pt-4">
+            <div class="pt-4 border-t border-slate-200">
+                <h3 class="text-base font-black text-slate-800 flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-users-slash text-rose-500"></i>
+                    已註冊隊伍管理
+                </h3>
+                <div id="admin-teams-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-200">
                 <h3 class="text-base font-black text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-sliders text-rose-500"></i>
                     關卡題目與密碼編輯 (31~47號)
@@ -683,6 +693,7 @@
                 snapshot.forEach(docSnap => {
                     registeredTeamsMap[docSnap.id] = docSnap.data();
                 });
+                renderAdminTeamsList();
             }, (err) => {
                 console.error("Teams Listener Error:", err);
             });
@@ -717,6 +728,7 @@
                 document.getElementById('tab-admin').classList.remove('hidden');
                 document.getElementById('nav-admin').className = "px-3 md:px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 bg-slate-800 text-white shadow-sm";
                 renderAdminTasksList();
+                renderAdminTeamsList();
             }
         };
 
@@ -1236,6 +1248,51 @@
                     } catch (err) {
                         console.error("Delete submission error:", err);
                         showToast("刪除失敗，請再試一次", "error");
+                    }
+                }
+            });
+        };
+
+        function renderAdminTeamsList() {
+            const container = document.getElementById('admin-teams-list');
+            if (!container) return;
+
+            const teamKeys = Object.keys(registeredTeamsMap);
+            if (teamKeys.length === 0) {
+                container.innerHTML = `<div class="col-span-full p-4 bg-slate-50 rounded-xl text-center text-xs text-slate-500 border border-slate-200">目前尚無已註冊的隊伍</div>`;
+                return;
+            }
+
+            container.innerHTML = teamKeys.map(teamId => {
+                const team = registeredTeamsMap[teamId];
+                return `
+                    <div class="bg-white p-3 rounded-2xl border border-rose-100 shadow-sm flex items-center justify-between gap-2">
+                        <div class="truncate">
+                            <h4 class="text-sm font-bold text-slate-800 truncate">${team.name}</h4>
+                            <p class="text-[10px] text-slate-400 truncate">ID: ${teamId.substring(0, 6)}...</p>
+                        </div>
+                        <button onclick="promptDeleteTeam('${teamId}')" class="shrink-0 w-8 h-8 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white flex items-center justify-center transition" title="刪除隊伍">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.promptDeleteTeam = function(teamId) {
+            const team = registeredTeamsMap[teamId];
+            if (!team) return;
+            
+            showConfirmModal({
+                title: "確定要刪除此隊伍？",
+                message: `即將刪除隊伍「${team.name}」。刪除後該隊伍名稱將釋出，其他使用者可重新註冊使用此名稱。`,
+                onConfirm: async () => {
+                    try {
+                        await deleteDoc(doc(teamsCollectionRef, teamId));
+                        showToast(`已成功刪除隊伍「${team.name}」！`, "success");
+                    } catch (err) {
+                        console.error("Delete team error:", err);
+                        showToast("刪除隊伍失敗，請再試一次", "error");
                     }
                 }
             });
