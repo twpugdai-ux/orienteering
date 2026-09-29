@@ -235,6 +235,9 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1">您的姓名 / 隊名 <span class="text-rose-500">*</span></label>
                     <input type="text" id="input-initial-team-name" required placeholder="例如: 嘉義小女孩 / 諸羅探索隊" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none text-sm font-medium">
                 </div>
+                <div id="team-name-error-msg" class="text-xs font-bold text-rose-600 hidden bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+                    <i class="fa-solid fa-circle-exclamation me-1"></i> 此隊名已被其他隊伍使用，請更換其他隊名！
+                </div>
                 <button type="submit" class="w-full py-3 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-xl shadow-lg shadow-rose-200 transition">
                     儲存隊名，開始探索 <i class="fa-solid fa-arrow-right ms-1"></i>
                 </button>
@@ -415,11 +418,13 @@
         const tasksCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'tasks');
         const submissionsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'submissions');
         const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
+        const teamsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'teams');
 
         // Local state store
         let currentUserId = null;
         let tasksMap = {};
         let submissionsList = [];
+        let registeredTeamsMap = {};
         let completedTaskIds = new Set();
         let selectedTaskIdForLogin = null;
         let currentEditingUser = localStorage.getItem('chiayi_girls_day_team') || '';
@@ -580,6 +585,7 @@
                 listenToConfig();
                 listenToTasks();
                 listenToSubmissions();
+                listenToTeams();
 
             } catch (err) {
                 console.error("Auth Exception:", err);
@@ -588,6 +594,7 @@
                 listenToConfig();
                 listenToTasks();
                 listenToSubmissions();
+                listenToTeams();
 
                 if (err.code === 'auth/configuration-not-found' || (err.message && err.message.includes('configuration-not-found'))) {
                     showNoticeBanner("⚠️ <b>Firebase 驗證未開啟：</b>請登入 <a href='https://console.firebase.google.com/' target='_blank' class='underline font-bold text-amber-900'>Firebase Console</a> ➔ 點擊左側 <b>Authentication</b> ➔ <b>Sign-in method</b> ➔ 啟用<b>「匿名 (Anonymous)」</b>登入！");
@@ -667,6 +674,17 @@
                 renderGallery();
             }, (err) => {
                 console.error("Submissions Listener Error:", err);
+            });
+        }
+
+        function listenToTeams() {
+            onSnapshot(teamsCollectionRef, (snapshot) => {
+                registeredTeamsMap = {};
+                snapshot.forEach(docSnap => {
+                    registeredTeamsMap[docSnap.id] = docSnap.data();
+                });
+            }, (err) => {
+                console.error("Teams Listener Error:", err);
             });
         }
 
@@ -798,20 +816,61 @@
 
         window.openTeamSetupModal = function() {
             const input = document.getElementById('input-initial-team-name');
+            const errorEl = document.getElementById('team-name-error-msg');
             if (input) input.value = currentEditingUser || '';
+            if (errorEl) errorEl.classList.add('hidden');
             openModal('modal-team-setup');
         };
 
-        window.handleSaveTeamName = function(e) {
+        window.handleSaveTeamName = async function(e) {
             e.preventDefault();
             const nameInput = document.getElementById('input-initial-team-name').value.trim();
+            const errorEl = document.getElementById('team-name-error-msg');
+            if (errorEl) errorEl.classList.add('hidden');
+
             if (!nameInput) return;
+
+            const lowerInput = nameInput.toLowerCase();
+
+            // 檢查是否有其他使用者（userId 不同）已經註冊了相同的隊名
+            const isDuplicateInTeams = Object.entries(registeredTeamsMap).some(([uId, tData]) => {
+                return uId !== currentUserId && tData.name && tData.name.trim().toLowerCase() === lowerInput;
+            });
+
+            // 檢查成果牆上的歷史投稿是否有其他使用者使用過此隊名
+            const isDuplicateInSubmissions = submissionsList.some(sub => {
+                return sub.userId !== currentUserId && sub.userName && sub.userName.trim().toLowerCase() === lowerInput;
+            });
+
+            if (isDuplicateInTeams || isDuplicateInSubmissions) {
+                if (errorEl) {
+                    errorEl.innerHTML = `<i class="fa-solid fa-circle-exclamation me-1"></i> 隊名「<strong>${nameInput}</strong>」已被其他隊伍使用，請更換其他隊名！`;
+                    errorEl.classList.remove('hidden');
+                } else {
+                    showToast(`隊名「${nameInput}」已被其他隊伍使用！`, "error");
+                }
+                return;
+            }
 
             currentEditingUser = nameInput;
             localStorage.setItem('chiayi_girls_day_team', currentEditingUser);
+
+            // 將隊名同步登記到 Firestore 隊伍資料庫中
+            if (currentUserId && auth.currentUser) {
+                try {
+                    await setDoc(doc(teamsCollectionRef, currentUserId), {
+                        name: currentEditingUser,
+                        userId: currentUserId,
+                        updatedAt: Date.now()
+                    }, { merge: true });
+                } catch (err) {
+                    console.error("Save Team Firestore Error:", err);
+                }
+            }
+
             updateTeamHeaderUI();
             closeModal('modal-team-setup');
-            showToast(`隊名已設定為：「${currentEditingUser}」`, "success");
+            showToast(`隊名已成功設定為：「${currentEditingUser}」`, "success");
 
             if (selectedTaskIdForLogin) {
                 openTaskLoginModal(selectedTaskIdForLogin);
